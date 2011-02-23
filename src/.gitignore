@@ -1,0 +1,45 @@
+tandard VS.NET and ReSharper Foo
+obj
+bin
+*.csproj.user
+*ReSharper*
+*resharper*
+*.suo
+*.cache
+* Thumbs.db
+
+# Prevents ignoring .csproj.resharper files (for namespace exemptions)
+!*.csproj.ReSharper
+
+# For avoiding installers (no bin folder)
+Release
+Debug
+
+# Visual Studio Team System stuff
+*.vssscc
+*.vspscc
+*.vsmdi
+*.testsettings
+
+# Other useful stuff
+*.bak
+*.cache
+*.log
+*.swp
+*.user
+_compareTemp
+_notes
+aspnet_client
+httpd.parse.errors
+
+# Office Temp Files
+~$*
+
+# If you have a deploy folder
+deploy
+deploy/*
+
+# NDepend Project files and output
+ndependout
+*.ndproj
+NDependOut

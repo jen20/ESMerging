@@ -1,0 +1,5 @@
+<Configuration>
+  <NamespaceFolders>
+    <SkipFolder>824C4A7A-9AC6-46BF-B151-4DC7D93C230B/d:Infrastructure</SkipFolder>
+  </NamespaceFolders>
+</Configuration>
