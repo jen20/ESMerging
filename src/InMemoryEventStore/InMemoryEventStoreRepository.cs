@@ -1,31 +1,62 @@
 using System;
+using System.Collections.Generic;
 using Domain;
+using Events;
 
 namespace InMemoryEventStore
 {
-    public class InMemoryEventStoreRepository<T> : IRepository<T> where T : AggregateRootBase
+    public class InMemoryEventStoreRepository<TAggregateType> : IRepository<TAggregateType> where TAggregateType : AggregateRootBase
+    {
+        private readonly IUnitOfWork<TAggregateType> _unitOfWork;
+
+        public InMemoryEventStoreRepository(IUnitOfWork<TAggregateType> unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
+        public bool TryGetById(Guid aggregateId, out TAggregateType aggregate)
+        {
+            return _unitOfWork.TryGetById(aggregateId, out aggregate);
+        }
+    }
+
+    public interface IUnitOfWork<TAggregateType> where TAggregateType : AggregateRootBase
+    {
+        bool TryGetById(Guid aggregateId, out TAggregateType aggregate);
+       // void AddNewAggregate(TAggregateType aggregate);
+       // void Commit();
+    }
+
+    public class EventStoreUnitOfWork<TAggregateType> : IUnitOfWork<TAggregateType> where TAggregateType : AggregateRootBase
     {
         private readonly IEventStore _eventStore;
+        private readonly List<TAggregateType> _trackedAggregates;
 
-        public InMemoryEventStoreRepository(IEventStore eventStore)
+        public EventStoreUnitOfWork(IEventStore eventStore)
         {
+            _trackedAggregates = new List<TAggregateType>();
             _eventStore = eventStore;
         }
 
-        #region Implementation of IRepository<T>
-
-        public void Save(T aggregate, int expectedVersion)
+        public bool TryGetById(Guid aggregateId, out TAggregateType aggregate)
         {
-            _eventStore.SaveEvents(aggregate.AggregateId, aggregate.GetUncommittedChanges(), expectedVersion);
-        }
+            IEnumerable<Event> aggregateEvents;
 
-        public T GetById(Guid id)
-        {
-            var aggregate = (T)Activator.CreateInstance(typeof (T), true);
-            aggregate.LoadFromEventStream(_eventStore.GetEventsForAggregate(id));
-            return aggregate;
-        }
+            try
+            {
+                aggregateEvents = _eventStore.GetEventsForAggregate(aggregateId);
+            } catch (AggregateNotFoundException)
+            {
+                aggregate = null;
+                return false;
+            }
 
-        #endregion
+            aggregate = (TAggregateType) Activator.CreateInstance(typeof (TAggregateType), true);
+            aggregate.LoadFromEventStream(aggregateEvents);
+
+            _trackedAggregates.Add(aggregate);
+
+            return true;
+        }
     }
 }
