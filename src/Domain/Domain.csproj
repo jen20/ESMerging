@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Infrastructure\AggregateRootBase.cs" />
-    <Compile Include="Infrastructure\IRepository.cs" />
+    <Compile Include="Infrastructure\ITrackingRepository.cs" />
     <Compile Include="Infrastructure\PrivateReflection.cs" />
     <Compile Include="InsufficientStockException.cs" />
     <Compile Include="InventoryItem.cs" />

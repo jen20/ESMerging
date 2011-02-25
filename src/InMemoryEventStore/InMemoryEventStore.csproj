@@ -45,7 +45,7 @@
     <Compile Include="IEventPublisher.cs" />
     <Compile Include="IEventStore.cs" />
     <Compile Include="EventStore.cs" />
-    <Compile Include="InMemoryEventStoreRepository.cs" />
+    <Compile Include="InMemoryEventStoreTrackingTrackingRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

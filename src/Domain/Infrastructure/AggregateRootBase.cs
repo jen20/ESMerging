@@ -22,9 +22,9 @@ namespace Domain
             return _changes;
         }
 
-        public void ClearChanges()
+        public bool HasChanges()
         {
-            _changes.Clear();
+            return _changes.Count > 0;
         }
 
         #endregion
