@@ -6,9 +6,10 @@ namespace Commands
     {
         public Guid InventoryItemId { get; private set; }
 
-        public DeactivateInventoryItem(Guid inventoryItemId)
+        public DeactivateInventoryItem(Guid inventoryItemId, int expectedVersion)
         {
             InventoryItemId = inventoryItemId;
+            ExepectedAggregateVersion = expectedVersion;
         }
 
         public override Guid AggregateId

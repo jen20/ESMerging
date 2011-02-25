@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{516EF749-9C03-4A4A-83D1-AAA763E54E83}</ProjectGuid>
+    <ProjectGuid>{F6BDDF04-26EC-4313-BD21-D20F200CD1C2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CommandHandlers</RootNamespace>
-    <AssemblyName>CommandHandlers</AssemblyName>
+    <RootNamespace>Test.CommandHandlers</RootNamespace>
+    <AssemblyName>Test.CommandHandlers</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,6 +31,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.5.8.10295, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\NUnit-2.5.9\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,14 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CreateInventoryItemHandler.cs" />
-    <Compile Include="DeactivateInventoryItemHandler.cs" />
-    <Compile Include="Intrastructure\ICommandHandler.cs" />
+    <Compile Include="MergingHandlerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WrappingHandlers\RealConcurrencyException.cs" />
-    <Compile Include="WrappingHandlers\RetryOnConcurencyExceptionHandler.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CommandHandlers\CommandHandlers.csproj">
+      <Project>{516EF749-9C03-4A4A-83D1-AAA763E54E83}</Project>
+      <Name>CommandHandlers</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Commands\Commands.csproj">
       <Project>{B5945218-9569-419A-86FE-8F747095D063}</Project>
       <Name>Commands</Name>

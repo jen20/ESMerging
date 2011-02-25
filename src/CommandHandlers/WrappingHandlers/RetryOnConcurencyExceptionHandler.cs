@@ -66,7 +66,7 @@ namespace CommandHandlers
 
         private static bool ConflictsWith(Event proposedEvent, Event existingEvent)
         {
-            return true;
+            return false;
         }
     }
 }

@@ -1,0 +1,6 @@
+<Configuration>
+  <NamespaceFolders>
+    <SkipFolder>516EF749-9C03-4A4A-83D1-AAA763E54E83/d:Intrastructure</SkipFolder>
+    <SkipFolder>516EF749-9C03-4A4A-83D1-AAA763E54E83/d:WrappingHandlers</SkipFolder>
+  </NamespaceFolders>
+</Configuration>
