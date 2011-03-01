@@ -1,5 +1,7 @@
-﻿using Commands;
-using Domain;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using Commands;
 using Events;
 using InMemoryEventStore;
 
@@ -8,32 +10,43 @@ namespace CommandHandlers
     public class MergingHandler<TCommandType> : ICommandHandler<TCommandType> where TCommandType : Command
     {
         private readonly ICommandHandler<TCommandType> _next;
-        private readonly IRepository _repository;
         private readonly IEventStore _eventStore;
 
-        public MergingHandler(ICommandHandler<TCommandType> next, IRepository repository, IEventStore eventStore)
+        public MergingHandler(ICommandHandler<TCommandType> next, IEventStore eventStore)
         {
             _next = next;
-            _repository = repository;
             _eventStore = eventStore;
         }
 
-        public void Handle(TCommandType command)
+        public void Handle(TCommandType command, CommandExecutionContext context)
         {
-            //var eventsSinceExpectedVersion = _eventStore.GetEventsForAggregateSinceVersion(command.AggregateId, command.ExepectedAggregateVersion);
-            //_next.Handle(command);
-            //var eventsFromCommandHandler = _repository.TrackedAggregate.GetUncommittedChanges();
+            _next.Handle(command, context);
 
-            //foreach (var existingEvent in eventsSinceExpectedVersion)
-            //{
-            //    foreach (var proposedEvent in eventsFromCommandHandler)
-            //    {
-            //        if (ConflictsWith(proposedEvent, existingEvent))
-            //            throw new RealConcurrencyException();
-            //    }
-            //}
+            if (context.Aggregate == null)
+                return;
 
-            //_repository.CommitTrackedAggregate();
+            IEnumerable<Event> eventsSinceExpectedVersion;
+
+            try
+            {
+                eventsSinceExpectedVersion = _eventStore.GetEventsForAggregateSinceVersion(command.AggregateId, command.ExepectedAggregateVersion);
+            } catch (AggregateNotFoundException)
+            {
+                eventsSinceExpectedVersion = new List<Event>();
+            }
+
+            var eventsFromCommandHandler = context.Aggregate.GetUncommittedChanges();
+
+            foreach (var existingEvent in eventsSinceExpectedVersion)
+            {
+                foreach (var proposedEvent in eventsFromCommandHandler)
+                {
+                    if (ConflictsWith(proposedEvent, existingEvent))
+                        throw new RealConcurrencyException();
+                }
+            }
+
+            _eventStore.SaveEvents(context.Aggregate.AggregateId, context.Aggregate.GetUncommittedChanges(), command.ExepectedAggregateVersion);
         }
 
         private static bool ConflictsWith(Event proposedEvent, Event existingEvent)

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using CommandHandlers;
 using Commands;
-using Domain;
 using Events;
 using InMemoryEventStore;
 using NUnit.Framework;
@@ -17,24 +16,22 @@ namespace Test.CommandHandlers
         {
             var stubPublisher = new StubEventPublisher();
             var eventStore = new EventStore(stubPublisher);
-            var repository = new InMemoryEventStoreRepository(eventStore);
 
             var aggregateId = Guid.NewGuid();
 
-            var chain1 = new CreateInventoryItemHandler(repository);
+            var chain1 = new CreateInventoryItemHandler();
             var command1 = new CreateInventoryItem(aggregateId, "A Name");
             
-            chain1.Handle(command1);
+            chain1.Handle(command1, new CommandExecutionContext());
             
-
-            repository = new InMemoryEventStoreRepository(eventStore);
+            var repository = new InMemoryEventStoreRepository(eventStore);
 
             var chain2 = new RetryOnConcurencyExceptionHandler<DeactivateInventoryItem>(
                             new MergingHandler<DeactivateInventoryItem>(
-                                new DeactivateInventoryItemHandler(repository), repository, eventStore));
+                                new DeactivateInventoryItemHandler(repository), eventStore));
             var command2 = new DeactivateInventoryItem(aggregateId, 1);
 
-            chain2.Handle(command2);
+            chain2.Handle(command2, new CommandExecutionContext());
         }
 
     }

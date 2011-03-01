@@ -12,16 +12,17 @@ namespace CommandHandlers
             _next = next;
         }
 
-        public void Handle(T command)
+        public void Handle(T command, CommandExecutionContext context)
         {
             bool retry = true;
             while (retry)
             {
                 try
                 {
-                    _next.Handle(command);
+                    _next.Handle(command, context);
                     retry = false;
-                } catch (EventStoreConcurrencyException)
+                }
+                catch (EventStoreConcurrencyException)
                 {
                     //Specifically ignore and retry
                 }

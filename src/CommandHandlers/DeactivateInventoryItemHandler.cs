@@ -12,9 +12,12 @@ namespace CommandHandlers
             _repository = repository;
         }
 
-        public void Handle(DeactivateInventoryItem command)
+        public void Handle(DeactivateInventoryItem command, CommandExecutionContext context)
         {
-            
+            var item = _repository.GetById<InventoryItem>(command.InventoryItemId);
+            context.Aggregate = item;
+
+            item.Deactivate();
         }
     }
 }
