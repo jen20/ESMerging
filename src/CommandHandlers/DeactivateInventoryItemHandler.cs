@@ -5,17 +5,16 @@ namespace CommandHandlers
 {
     public class DeactivateInventoryItemHandler : ICommandHandler<DeactivateInventoryItem>
     {
-        private readonly ITrackingRepository<InventoryItem> _trackingRepository;
+        private readonly IRepository _repository;
 
-        public DeactivateInventoryItemHandler(ITrackingRepository<InventoryItem> trackingRepository)
+        public DeactivateInventoryItemHandler(IRepository repository)
         {
-            _trackingRepository = trackingRepository;
+            _repository = repository;
         }
 
         public void Handle(DeactivateInventoryItem command)
         {
-            var item = _trackingRepository.GetByIdAndTrack(command.InventoryItemId);
-            item.Deactivate();
+            
         }
     }
 }

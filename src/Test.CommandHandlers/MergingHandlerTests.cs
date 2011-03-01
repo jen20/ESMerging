@@ -17,22 +17,22 @@ namespace Test.CommandHandlers
         {
             var stubPublisher = new StubEventPublisher();
             var eventStore = new EventStore(stubPublisher);
-            var repository = new InMemoryEventStoreTrackingRepository<InventoryItem>(eventStore);
+            var repository = new InMemoryEventStoreRepository(eventStore);
 
-            var _aggregateId = Guid.NewGuid();
+            var aggregateId = Guid.NewGuid();
 
             var chain1 = new CreateInventoryItemHandler(repository);
-            var command1 = new CreateInventoryItem(_aggregateId, "A Name");
+            var command1 = new CreateInventoryItem(aggregateId, "A Name");
             
             chain1.Handle(command1);
-            repository.CommitTrackedAggregate();
+            
 
-            repository = new InMemoryEventStoreTrackingRepository<InventoryItem>(eventStore);
+            repository = new InMemoryEventStoreRepository(eventStore);
 
             var chain2 = new RetryOnConcurencyExceptionHandler<DeactivateInventoryItem>(
-                new MergingHandler<DeactivateInventoryItem, InventoryItem>(
-                    new DeactivateInventoryItemHandler(repository), repository, eventStore));
-            var command2 = new DeactivateInventoryItem(_aggregateId, 1);
+                            new MergingHandler<DeactivateInventoryItem>(
+                                new DeactivateInventoryItemHandler(repository), repository, eventStore));
+            var command2 = new DeactivateInventoryItem(aggregateId, 1);
 
             chain2.Handle(command2);
         }

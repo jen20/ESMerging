@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="CreateInventoryItemHandler.cs" />
     <Compile Include="DeactivateInventoryItemHandler.cs" />
+    <Compile Include="Intrastructure\CommandExecutionContext.cs" />
     <Compile Include="Intrastructure\ICommandHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WrappingHandlers\MergingHandler.cs" />

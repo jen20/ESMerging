@@ -4,6 +4,6 @@ namespace CommandHandlers
 {
     public interface ICommandHandler<T> where T : Command
     {
-        void Handle(T command);
+        void Handle(T command, CommandExecutionContext context);
     }
 }

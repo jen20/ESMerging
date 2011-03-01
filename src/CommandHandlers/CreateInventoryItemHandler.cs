@@ -1,21 +1,21 @@
-﻿using Commands;
+﻿using System;
+using Commands;
 using Domain;
 
 namespace CommandHandlers
 {
     public class CreateInventoryItemHandler : ICommandHandler<CreateInventoryItem>
     {
-        private readonly ITrackingRepository<InventoryItem> _trackingRepository;
+        private readonly IRepository _repository;
 
-        public CreateInventoryItemHandler(ITrackingRepository<InventoryItem> trackingRepository)
+        public CreateInventoryItemHandler(IRepository repository)
         {
-            _trackingRepository = trackingRepository;
+            _repository = repository;
         }
 
-        public void Handle(CreateInventoryItem command)
+        public void Handle(CreateInventoryItem command, CommandExecutionContext context)
         {
-            var item = new InventoryItem(command.InventoryItemId, command.Name);
-            _trackingRepository.TrackNewAggregate(item);
+
         }
     }
 }
