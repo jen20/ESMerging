@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Commands;
 using Events;
 using InMemoryEventStore;
 
 namespace CommandHandlers
 {
-    public class MergingHandler<TCommandType> : ICommandHandler<TCommandType> where TCommandType : Command
+    public class MergingContextCommitHandler<TCommandType> : ICommandHandler<TCommandType> where TCommandType : Command
     {
         private readonly ICommandHandler<TCommandType> _next;
         private readonly IEventStore _eventStore;
 
-        public MergingHandler(ICommandHandler<TCommandType> next, IEventStore eventStore)
+        public MergingContextCommitHandler(ICommandHandler<TCommandType> next, IEventStore eventStore)
         {
             _next = next;
             _eventStore = eventStore;
@@ -46,7 +44,8 @@ namespace CommandHandlers
                 }
             }
 
-            _eventStore.SaveEvents(context.Aggregate.AggregateId, context.Aggregate.GetUncommittedChanges(), command.ExepectedAggregateVersion);
+            _eventStore.SaveEvents(context.Aggregate.AggregateId, context.Aggregate.GetUncommittedChanges(),
+                                   command.ExepectedAggregateVersion);
         }
 
         private static bool ConflictsWith(Event proposedEvent, Event existingEvent)

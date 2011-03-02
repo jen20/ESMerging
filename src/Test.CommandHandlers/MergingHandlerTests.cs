@@ -19,7 +19,9 @@ namespace Test.CommandHandlers
 
             var aggregateId = Guid.NewGuid();
 
-            var chain1 = new CreateInventoryItemHandler();
+            var chain1 = new MergingContextCommitHandler<CreateInventoryItem>(
+                            new CreateInventoryItemHandler(), eventStore);
+
             var command1 = new CreateInventoryItem(aggregateId, "A Name");
             
             chain1.Handle(command1, new CommandExecutionContext());
@@ -27,8 +29,9 @@ namespace Test.CommandHandlers
             var repository = new InMemoryEventStoreRepository(eventStore);
 
             var chain2 = new RetryOnConcurencyExceptionHandler<DeactivateInventoryItem>(
-                            new MergingHandler<DeactivateInventoryItem>(
+                            new MergingContextCommitHandler<DeactivateInventoryItem>(
                                 new DeactivateInventoryItemHandler(repository), eventStore));
+
             var command2 = new DeactivateInventoryItem(aggregateId, 1);
 
             chain2.Handle(command2, new CommandExecutionContext());
