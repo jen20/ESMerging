@@ -14,13 +14,21 @@ namespace Test.CommandHandlers
         [Test]
         public void Fubar()
         {
+            var allowedMerges = new AllowableMergesDefinition();
+            allowedMerges.AllowBothWays<InventoryItemRenamed, InventoryItemCheckedOutFromStock>();
+            allowedMerges.AllowBothWays<InventoryItemRenamed, InventoryItemReceivedIntoStock>();
+            allowedMerges.AllowBothWays<InventoryItemReceivedIntoStock, InventoryItemCheckedOutFromStock>();
+            allowedMerges.AllowOneWay<InventoryItemDeactivated, InventoryItemRenamed>();
+            allowedMerges.AllowOneWay<InventoryItemDeactivated, InventoryItemCheckedOutFromStock>();
+            allowedMerges.AllowOneWay<InventoryItemDeactivated, InventoryItemReceivedIntoStock>();
+
             var stubPublisher = new StubEventPublisher();
             var eventStore = new EventStore(stubPublisher);
 
             var aggregateId = Guid.NewGuid();
 
             var chain1 = new MergingContextCommitHandler<CreateInventoryItem>(
-                            new CreateInventoryItemHandler(), eventStore);
+                            new CreateInventoryItemHandler(), eventStore, allowedMerges);
 
             var command1 = new CreateInventoryItem(aggregateId, "A Name");
             
@@ -29,47 +37,13 @@ namespace Test.CommandHandlers
             var repository = new InMemoryEventStoreRepository(eventStore);
 
             var chain2 = new RetryOnConcurencyExceptionHandler<DeactivateInventoryItem>(
-                            new MergingContextCommitHandler<DeactivateInventoryItem>(
-                                new DeactivateInventoryItemHandler(repository), eventStore));
+                new MergingContextCommitHandler<DeactivateInventoryItem>(
+                    new DeactivateInventoryItemHandler(repository), eventStore, allowedMerges));
 
             var command2 = new DeactivateInventoryItem(aggregateId, 1);
 
             chain2.Handle(command2, new CommandExecutionContext());
         }
 
-    }
-
-    public class StubEventPublisher : IEventPublisher
-    {
-        private readonly IList<Event> _publishedEvents;
-
-        public StubEventPublisher()
-        {
-            _publishedEvents = new List<Event>();
-        }
-
-        #region Implementation of IEventPublisher
-
-        public void Publish<T>(T @event) where T : Event
-        {
-            _publishedEvents.Add(@event);
-        }
-
-        #endregion
-
-        public IEnumerable<Event> PublishedEvents
-        {
-            get { return _publishedEvents; }
-        }
-
-        public bool ContainsEvent(Event @event)
-        {
-            return _publishedEvents.Contains(@event);
-        }
-
-        public void ClearPublishedEvents()
-        {
-            _publishedEvents.Clear();
-        }
     }
 }

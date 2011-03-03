@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Commands;
 using Events;
 using InMemoryEventStore;
@@ -10,9 +11,12 @@ namespace CommandHandlers
         private readonly ICommandHandler<TCommandType> _next;
         private readonly IEventStore _eventStore;
 
-        public MergingContextCommitHandler(ICommandHandler<TCommandType> next, IEventStore eventStore)
+        private readonly AllowableMergesDefinition _allowedMerges;
+
+        public MergingContextCommitHandler(ICommandHandler<TCommandType> next, IEventStore eventStore, AllowableMergesDefinition allowedMerges)
         {
             _next = next;
+            _allowedMerges = allowedMerges;
             _eventStore = eventStore;
         }
 
@@ -23,8 +27,9 @@ namespace CommandHandlers
             if (context.Aggregate == null)
                 return;
 
-            IEnumerable<Event> eventsSinceExpectedVersion;
+            var expectedVersionAfterMerging = command.ExepectedAggregateVersion;
 
+            IEnumerable<Event> eventsSinceExpectedVersion;
             try
             {
                 eventsSinceExpectedVersion = _eventStore.GetEventsForAggregateSinceVersion(command.AggregateId, command.ExepectedAggregateVersion);
@@ -35,6 +40,8 @@ namespace CommandHandlers
 
             var eventsFromCommandHandler = context.Aggregate.GetUncommittedChanges();
 
+            
+
             foreach (var existingEvent in eventsSinceExpectedVersion)
             {
                 foreach (var proposedEvent in eventsFromCommandHandler)
@@ -42,15 +49,16 @@ namespace CommandHandlers
                     if (ConflictsWith(proposedEvent, existingEvent))
                         throw new RealConcurrencyException();
                 }
+                expectedVersionAfterMerging = existingEvent.AggregateVersion;
             }
 
             _eventStore.SaveEvents(context.Aggregate.AggregateId, context.Aggregate.GetUncommittedChanges(),
-                                   command.ExepectedAggregateVersion);
+                                   expectedVersionAfterMerging);
         }
-
-        private static bool ConflictsWith(Event proposedEvent, Event existingEvent)
+        
+        private bool ConflictsWith(Event proposedEvent, Event existingEvent)
         {
-            return false;
+            return !_allowedMerges.IsMergeAllowed(proposedEvent, existingEvent);
         }
     }
 }

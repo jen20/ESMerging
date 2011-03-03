@@ -13,7 +13,7 @@ namespace Domain
 
         #endregion
 
-        #region Uncommitted Change Tracking and Exposure
+        #region Uncommitted Change Tracking and Merge Conflict Detection
 
         private readonly List<Event> _changes = new List<Event>();
 
