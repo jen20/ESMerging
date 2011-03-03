@@ -19,7 +19,7 @@ namespace Test.InMemoryEventStore
         [SetUp]
         public void SetUp()
         {
-            _eventStore = new EventStore(new StubEventPublisher());
+            _eventStore = new global::InMemoryEventStore.InMemoryEventStore(new StubEventPublisher());
             _eventStore.SaveEvents(_aggregateId, EventStreamToSave(), -1);
 
             _retrievedEvents = _eventStore.GetEventsForAggregateSinceVersion(_aggregateId, 3).ToList();

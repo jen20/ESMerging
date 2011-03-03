@@ -40,8 +40,6 @@ namespace CommandHandlers
 
             var eventsFromCommandHandler = context.Aggregate.GetUncommittedChanges();
 
-            
-
             foreach (var existingEvent in eventsSinceExpectedVersion)
             {
                 foreach (var proposedEvent in eventsFromCommandHandler)

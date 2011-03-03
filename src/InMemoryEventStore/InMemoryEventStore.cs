@@ -5,12 +5,12 @@ using Events;
 
 namespace InMemoryEventStore
 {
-    public class EventStore : IEventStore
+    public class InMemoryEventStore : IEventStore
     {
         private readonly IEventPublisher _publisher;
         private readonly Dictionary<Guid, List<EventDescriptor>> _storedEvents;
 
-        public EventStore(IEventPublisher publisher)
+        public InMemoryEventStore(IEventPublisher publisher)
         {
             _publisher = publisher;
             _storedEvents = new Dictionary<Guid, List<EventDescriptor>>();
@@ -41,9 +41,8 @@ namespace InMemoryEventStore
             {
                 eventDescriptors = new List<EventDescriptor>();
                 _storedEvents.Add(aggregateId, eventDescriptors);
-            } else if (eventDescriptors[eventDescriptors.Count - 1].AggregateVersion != expectedVersion && expectedVersion != -1)
+            } else if (eventDescriptors[eventDescriptors.Count - 1].AggregateVersion != expectedVersion && expectedVersion != 0)
             {
-                //look at the -1 here
                 throw new EventStoreConcurrencyException();
             }
 

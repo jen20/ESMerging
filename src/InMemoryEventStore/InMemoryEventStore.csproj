@@ -44,8 +44,8 @@
     <Compile Include="EventStoreConcurrencyException.cs" />
     <Compile Include="IEventPublisher.cs" />
     <Compile Include="IEventStore.cs" />
-    <Compile Include="EventStore.cs" />
-    <Compile Include="InMemoryEventStoreRepository.cs" />
+    <Compile Include="InMemoryEventStore.cs" />
+    <Compile Include="EventStoreRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

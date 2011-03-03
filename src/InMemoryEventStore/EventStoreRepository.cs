@@ -3,11 +3,11 @@ using Domain;
 
 namespace InMemoryEventStore
 {
-    public class InMemoryEventStoreRepository : IRepository
+    public class EventStoreRepository : IRepository
     {
         private readonly IEventStore _eventStore;
 
-        public InMemoryEventStoreRepository(IEventStore eventStore)
+        public EventStoreRepository(IEventStore eventStore)
         {
             _eventStore = eventStore;
         }

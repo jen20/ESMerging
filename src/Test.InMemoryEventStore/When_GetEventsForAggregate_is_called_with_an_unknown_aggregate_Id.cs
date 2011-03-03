@@ -14,7 +14,7 @@ namespace Test.InMemoryEventStore
         public void SetUp()
         {
             _publisher = new StubEventPublisher();
-            _eventStore = new EventStore(_publisher);
+            _eventStore = new global::InMemoryEventStore.InMemoryEventStore(_publisher);
         }
 
         [Test]
