@@ -45,6 +45,7 @@
     <Compile Include="Intrastructure\CommandExecutionContext.cs" />
     <Compile Include="Intrastructure\ICommandHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RenameInventoryItemHandler.cs" />
     <Compile Include="WrappingHandlers\AllowableMergesDefinition.cs" />
     <Compile Include="WrappingHandlers\MergingContextCommitHandler.cs" />
     <Compile Include="WrappingHandlers\RealConcurrencyException.cs" />

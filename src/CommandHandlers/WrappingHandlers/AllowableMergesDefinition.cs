@@ -19,6 +19,11 @@ namespace CommandHandlers
             _allowedMerges.Add(newPair);
         }
 
+        public void AllowConsecutiveEvents<TEvent>() where TEvent : Event
+        {
+            AllowOneWay<TEvent, TEvent>();
+        }
+
         public void AllowBothWays<TEvent1, TEvent2>() where TEvent1 : Event where TEvent2 : Event
         {
             AllowOneWay<TEvent1, TEvent2>();
